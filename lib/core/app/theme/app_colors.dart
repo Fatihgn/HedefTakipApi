@@ -11,4 +11,8 @@ class AppColors {
 
   // Primary blue color
   static const primaryColor = Color.fromRGBO(225, 94, 204, 1);
+
+  static const pinkColor = Color.fromRGBO(245, 0, 87, 1);
+
+  static const textColor = Colors.white;
 }

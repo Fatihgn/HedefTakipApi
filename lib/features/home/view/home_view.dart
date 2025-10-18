@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:hedef_takip_app/core/app/theme/app_colors.dart';
+import 'package:hedef_takip_app/features/home/states/home_view_state.dart';
+import 'package:hedef_takip_app/features/home/widgets/goal_type_card.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -8,24 +11,28 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-enum _GoalType { numerical, habit, project }
+class _HomeViewState extends State<HomeView> with HomeViewState {
+  // Single project date state
+  DateTime? _projectDate;
 
-class _HomeViewState extends State<HomeView> {
-  final _nameCtrl = TextEditingController();
-  final _descCtrl = TextEditingController();
-  final _targetCtrl = TextEditingController(text: '12');
-  final _milestoneCtrl = TextEditingController();
-  final List<String> _milestones = [];
+  String _fmtDate(DateTime? d) {
+    if (d == null) return 'Select date';
+    final m = d.month.toString().padLeft(2, '0');
+    final day = d.day.toString().padLeft(2, '0');
+    return '${d.year}-$m-$day';
+  }
 
-  _GoalType _selectedType = _GoalType.numerical;
-
-  @override
-  void dispose() {
-    _nameCtrl.dispose();
-    _descCtrl.dispose();
-    _targetCtrl.dispose();
-    _milestoneCtrl.dispose();
-    super.dispose();
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _projectDate ?? now,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      helpText: 'Select date',
+    );
+    if (picked == null) return;
+    setState(() => _projectDate = picked);
   }
 
   InputDecoration _inputDecoration({
@@ -42,14 +49,14 @@ class _HomeViewState extends State<HomeView> {
     return InputDecoration(
       hintText: hint,
       prefixIcon: prefixIcon != null
-          ? Icon(prefixIcon, color: Colors.greenAccent.shade400)
+          ? Icon(prefixIcon, color: Colors.deepPurpleAccent)
           : null,
       suffixIcon: suffix,
       filled: true,
       fillColor: bg,
       enabledBorder: border,
       focusedBorder: border.copyWith(
-        borderSide: BorderSide(color: Colors.greenAccent.shade400, width: 1.2),
+        borderSide: BorderSide(color: Colors.deepPurpleAccent, width: 1.2),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       hintStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
@@ -58,11 +65,8 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = Colors.white;
-    final subtle = Colors.white.withOpacity(0.7);
-
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1015),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
@@ -70,36 +74,28 @@ class _HomeViewState extends State<HomeView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.maybePop(context),
-                    icon: const Icon(Icons.close, color: Colors.white),
+              Center(
+                child: Text(
+                  'New Goal ✨',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textColor,
+                    fontWeight: FontWeight.w700,
                   ),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      'New Goal ✨',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
-                            color: textColor,
-                            fontWeight: FontWeight.w700,
-                          ),
-                    ),
-                  ),
-                  const SizedBox(width: 48), // balance close button space
-                ],
+                ),
               ),
 
               const SizedBox(height: 16),
 
               // Goal Name
-              Text('Goal Name', style: TextStyle(color: subtle)),
+              Text(
+                'Goal Name',
+                style: TextStyle(color: AppColors.textColor.withOpacity(0.8)),
+              ),
               const SizedBox(height: 8),
               TextField(
-                controller: _nameCtrl,
-                style: TextStyle(color: textColor),
+                controller: nameCtrl,
+                style: TextStyle(color: AppColors.textColor),
                 decoration: _inputDecoration(
                   hint: 'e.g., Run a 5k Marathon',
                   prefixIcon: Icons.flag_rounded,
@@ -109,51 +105,45 @@ class _HomeViewState extends State<HomeView> {
               const SizedBox(height: 20),
 
               // Description
-              Text('Description', style: TextStyle(color: subtle)),
+              Text(
+                'Description',
+                style: TextStyle(color: AppColors.textColor.withOpacity(0.8)),
+              ),
               const SizedBox(height: 8),
               TextField(
-                controller: _descCtrl,
+                controller: descCtrl,
                 maxLines: 4,
-                style: TextStyle(color: textColor),
+                style: TextStyle(color: AppColors.textColor),
                 decoration: _inputDecoration(
                   hint: 'A short description of your goal.',
                 ).copyWith(contentPadding: const EdgeInsets.all(16)),
               ),
-
               const SizedBox(height: 24),
-
               // Goal Type
-              Text('Goal Type', style: TextStyle(color: subtle)),
+              Text(
+                'Goal Type',
+                style: TextStyle(color: AppColors.textColor.withOpacity(0.8)),
+              ),
               const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
-                    child: _GoalTypeCard(
-                      label: 'Numerical',
-                      icon: Icons.onetwothree_rounded,
-                      selected: _selectedType == _GoalType.numerical,
-                      onTap: () =>
-                          setState(() => _selectedType = _GoalType.numerical),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _GoalTypeCard(
+                    child: GoalTypeCard(
                       label: 'Habit',
                       icon: Icons.autorenew_rounded,
-                      selected: _selectedType == _GoalType.habit,
+                      selected: selectedType == GoalType.habit,
                       onTap: () =>
-                          setState(() => _selectedType = _GoalType.habit),
+                          setState(() => selectedType = GoalType.habit),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _GoalTypeCard(
+                    child: GoalTypeCard(
                       label: 'Project',
                       icon: Icons.rocket_launch_rounded,
-                      selected: _selectedType == _GoalType.project,
+                      selected: selectedType == GoalType.project,
                       onTap: () =>
-                          setState(() => _selectedType = _GoalType.project),
+                          setState(() => selectedType = GoalType.project),
                     ),
                   ),
                 ],
@@ -162,12 +152,15 @@ class _HomeViewState extends State<HomeView> {
               const SizedBox(height: 24),
 
               // Target Value (only visually; you can later validate based on type)
-              Text('Target Value', style: TextStyle(color: subtle)),
+              Text(
+                'Target Value',
+                style: TextStyle(color: AppColors.textColor.withOpacity(0.8)),
+              ),
               const SizedBox(height: 8),
               TextField(
-                controller: _targetCtrl,
+                controller: targetCtrl,
                 keyboardType: TextInputType.number,
-                style: TextStyle(color: textColor),
+                style: TextStyle(color: AppColors.textColor),
                 decoration: _inputDecoration(
                   hint: '12',
                   prefixIcon: Icons.onetwothree_rounded,
@@ -176,65 +169,40 @@ class _HomeViewState extends State<HomeView> {
 
               const SizedBox(height: 24),
 
-              // Milestones / Sub-goals
-              Text('Milestones / Sub-goals', style: TextStyle(color: subtle)),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _milestoneCtrl,
-                style: TextStyle(color: textColor),
-                decoration: _inputDecoration(
-                  hint: 'Add a milestone',
-                  suffix: IconButton(
-                    onPressed: () {
-                      final text = _milestoneCtrl.text.trim();
-                      if (text.isNotEmpty) {
-                        setState(() {
-                          _milestones.add(text);
-                          _milestoneCtrl.clear();
-                        });
-                      }
-                    },
-                    icon: const Icon(
-                      Icons.add_circle_outline,
-                      color: Colors.white,
+              // Show single date picker only when Project is selected
+              if (selectedType == GoalType.project) ...[
+                Text(
+                  'Date',
+                  style: TextStyle(color: AppColors.textColor.withOpacity(0.8)),
+                ),
+                const SizedBox(height: 8),
+                InkWell(
+                  onTap: _pickDate,
+                  child: InputDecorator(
+                    decoration: _inputDecoration(
+                      hint: 'Select date',
+                      prefixIcon: Icons.event_rounded,
+                      suffix: const Icon(
+                        Icons.calendar_today_rounded,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 2.0,
+                        horizontal: 2.0,
+                      ),
+                      child: Text(
+                        _fmtDate(_projectDate),
+                        style: TextStyle(color: AppColors.textColor),
+                      ),
                     ),
                   ),
                 ),
-                onSubmitted: (_) => FocusScope.of(context).unfocus(),
-              ),
-              if (_milestones.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _milestones
-                      .asMap()
-                      .entries
-                      .map(
-                        (e) => Chip(
-                          label: Text(e.value),
-                          labelStyle: const TextStyle(color: Colors.white),
-                          backgroundColor: Colors.white.withOpacity(0.08),
-                          deleteIcon: const Icon(
-                            Icons.close,
-                            size: 18,
-                            color: Colors.white70,
-                          ),
-                          onDeleted: () =>
-                              setState(() => _milestones.removeAt(e.key)),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            side: BorderSide(
-                              color: Colors.white.withOpacity(0.12),
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
+                const SizedBox(height: 16),
               ],
-
-              const SizedBox(height: 28),
+              if (selectedType == GoalType.project) ...[SizedBox(height: 8)],
 
               // Create Goal button
               SizedBox(
@@ -270,59 +238,6 @@ class _HomeViewState extends State<HomeView> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _GoalTypeCard extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _GoalTypeCard({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final selectedColor = Colors.greenAccent.shade400;
-    final borderColor = selected
-        ? selectedColor
-        : Colors.white.withOpacity(0.12);
-    final bg = selected
-        ? Colors.white.withOpacity(0.06)
-        : Colors.white.withOpacity(0.04);
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Container(
-        height: 88,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: borderColor, width: selected ? 1.4 : 1),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: selected ? selectedColor : Colors.white70),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
         ),
       ),
     );

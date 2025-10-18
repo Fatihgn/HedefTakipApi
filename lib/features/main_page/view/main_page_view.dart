@@ -16,7 +16,7 @@ class MainPageView extends StatelessWidget {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          BlueLine(height: 2, opacity: 0.3),
+          BlueLine(height: 3, opacity: 0.3),
           BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             backgroundColor: AppColors.background,

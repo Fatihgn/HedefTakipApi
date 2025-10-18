@@ -151,21 +151,22 @@ class _HomeViewState extends State<HomeView> with HomeViewState {
 
               const SizedBox(height: 24),
 
-              // Target Value (only visually; you can later validate based on type)
-              Text(
-                'Target Value',
-                style: TextStyle(color: AppColors.textColor.withOpacity(0.8)),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: targetCtrl,
-                keyboardType: TextInputType.number,
-                style: TextStyle(color: AppColors.textColor),
-                decoration: _inputDecoration(
-                  hint: '12',
-                  prefixIcon: Icons.onetwothree_rounded,
+              if (selectedType == GoalType.project) ...[
+                Text(
+                  'Target Value',
+                  style: TextStyle(color: AppColors.textColor.withOpacity(0.8)),
                 ),
-              ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: targetCtrl,
+                  keyboardType: TextInputType.number,
+                  style: TextStyle(color: AppColors.textColor),
+                  decoration: _inputDecoration(
+                    hint: '12',
+                    prefixIcon: Icons.onetwothree_rounded,
+                  ),
+                ),
+              ],
 
               const SizedBox(height: 24),
 

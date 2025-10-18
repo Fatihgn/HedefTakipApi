@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:hedef_takip_app/core/app/theme/app_colors.dart';
 
 class ProgressView extends StatefulWidget {
   const ProgressView({super.key});
@@ -9,7 +10,6 @@ class ProgressView extends StatefulWidget {
 }
 
 class _ProgressViewState extends State<ProgressView> {
-  // NEW: demo state for task completion and progress
   bool _readingDone = false;
   bool _exerciseDone = false;
   bool _mindfulnessDone = false;
@@ -19,45 +19,26 @@ class _ProgressViewState extends State<ProgressView> {
   final int _mindCurrent = 10, _mindTarget = 40;
 
   // Colors
-  final Color _bg = const Color(0xFF0E1621);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.menu, color: Colors.white),
-                  ),
-                  const Spacer(),
-                  const Text(
-                    'Progress',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const Spacer(flex: 2),
-                ],
-              ),
               const SizedBox(height: 8),
-              const Text(
-                "Today's Progress",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  height: 1.15,
-                  fontWeight: FontWeight.w800,
+              Center(
+                child: Text(
+                  'Progress',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textColor,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),

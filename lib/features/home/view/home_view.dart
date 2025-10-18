@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:hedef_takip_app/core/app/enums/goal_type_enums.dart';
 import 'package:hedef_takip_app/core/app/theme/app_colors.dart';
+import 'package:hedef_takip_app/core/models/goal_model.dart';
 import 'package:hedef_takip_app/features/home/states/home_view_state.dart';
 import 'package:hedef_takip_app/features/home/widgets/goal_type_card.dart';
 
@@ -20,6 +22,93 @@ class _HomeViewState extends State<HomeView> with HomeViewState {
     final m = d.month.toString().padLeft(2, '0');
     final day = d.day.toString().padLeft(2, '0');
     return '${d.year}-$m-$day';
+  }
+  Future<void> _createGoal(GoalType goalType) async {
+    // Form validasyonu
+    if (nameCtrl.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lütfen hedef adını girin')),
+      );
+      return;
+    }
+    
+    if (descCtrl.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lütfen açıklama girin')),
+      );
+      return;
+    }
+    
+    if (goalType == GoalType.project && targetCtrl.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lütfen hedef değerini girin')),
+      );
+      return;
+    }
+    
+    if (goalType == GoalType.project && _projectDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lütfen tarih seçin')),
+      );
+      return;
+    }
+
+    try {
+      print('🚀 Hedef oluşturma işlemi başlıyor...');
+      print('📝 Form verileri:');
+      print('   - Ad: ${nameCtrl.text.trim()}');
+      print('   - Açıklama: ${descCtrl.text.trim()}');
+      print('   - Tip: $goalType');
+      print('   - Hedef değeri: ${targetCtrl.text}');
+      print('   - Tarih: $_projectDate');
+      
+      // Firebase bağlantısını test et
+      print('🔍 Firebase bağlantısı test ediliyor...');
+  
+      
+      final goal = GoalModel(
+        id: firebaseServices.generateId(),
+        name: nameCtrl.text.trim(),
+        description: descCtrl.text.trim(),
+        targetValue: goalType == GoalType.project ? int.tryParse(targetCtrl.text) : null,
+        deadline: goalType == GoalType.project ? _projectDate : null,
+        goalType: goalType,
+      );
+      
+      print('📦 GoalModel oluşturuldu: ${goal.toJson()}');
+      try {
+        await firebaseServices.addGoal(goal);
+        print('✅ Firebase kayıt işlemi tamamlandı!');
+      } catch (e) {
+        print('❌ Firebase kayıt hatası: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hata: $e')),
+        );
+      }
+      
+      
+      
+      print('✅ Firebase kayıt işlemi tamamlandı!');
+      
+      // Başarılı kayıt sonrası formu temizle
+      nameCtrl.clear();
+      descCtrl.clear();
+      targetCtrl.clear();
+      setState(() {
+        _projectDate = null;
+        selectedType = GoalType.habit;
+      });
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Hedef başarıyla oluşturuldu!')),
+      );
+      
+    } catch (e) {
+      print('❌ Hedef oluşturma hatası: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Hata: $e')),
+      );
+    }
   }
 
   Future<void> _pickDate() async {
@@ -217,11 +306,8 @@ class _HomeViewState extends State<HomeView> with HomeViewState {
                     borderRadius: BorderRadius.all(Radius.circular(28)),
                   ),
                   child: ElevatedButton(
-                    onPressed: () {
-                      // ...submit or navigate...
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Goal created (demo)')),
-                      );
+                    onPressed: () async {
+                      await _createGoal(selectedType);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,

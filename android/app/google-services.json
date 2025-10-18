@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "427263340181",
+    "project_id": "hedef-takip-app",
+    "storage_bucket": "hedef-takip-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:427263340181:android:6c425577150410f3d2759c",
+        "android_client_info": {
+          "package_name": "com.example.hedef_takip_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGrXaYA-0EfI6ZDU60L_4EmOSsViN9wWs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

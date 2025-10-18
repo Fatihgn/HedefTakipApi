@@ -4,4 +4,5 @@ class RouteName {
   static const String home = '/home';
   static const String profile = '/profile';
   static const String progress = '/progress';
+  static const String dashboard = '/dashboard';
 }

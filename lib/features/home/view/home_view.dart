@@ -78,7 +78,7 @@ class _HomeViewState extends State<HomeView> with HomeViewState {
                 child: Text(
                   'New Goal ✨',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: AppColors.textColor,
                     fontWeight: FontWeight.w700,
                   ),

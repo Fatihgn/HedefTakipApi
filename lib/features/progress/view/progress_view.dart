@@ -30,20 +30,26 @@ class _ProgressViewState extends State<ProgressView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 8),
               Center(
                 child: Text(
                   'Progress',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: AppColors.textColor,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Task cards
+              Text(
+                "Today's Habits ",
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: AppColors.textColor,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              SizedBox(height: 16),
               _TaskCard(
                 color: const Color(0xFFFC8EAC),
                 icon: Icons.menu_book_rounded,
@@ -171,7 +177,7 @@ class _TaskCard extends StatelessWidget {
         color: const Color(0xFF121C26),
         borderRadius: BorderRadius.circular(22),
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
           Container(
@@ -192,7 +198,7 @@ class _TaskCard extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: 17,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -201,7 +207,7 @@ class _TaskCard extends StatelessWidget {
                   subtitle,
                   style: const TextStyle(
                     color: Color(0xFF8EA0B4),
-                    fontSize: 16,
+                    fontSize: 14,
                   ),
                 ),
               ],
